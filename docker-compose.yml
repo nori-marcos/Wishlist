@@ -1,0 +1,31 @@
+services:
+  wishlist-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: wishlist-api
+    networks:
+      - my-network
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongo-container;
+
+  mongo-container:
+    container_name: mongo_container
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodata:/data/db
+    restart: always
+    networks:
+      - my-network
+
+volumes:
+  mongodata:
+
+networks:
+  my-network:
+    driver: bridge

@@ -1,0 +1,9 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: wishlist-api
+  data:
+    mongodb:
+      uri: mongodb://mongo_container:27017/wishlist
