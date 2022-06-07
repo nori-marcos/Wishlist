@@ -13,8 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
@@ -59,23 +57,24 @@ class WishedProductServiceImplTest {
     public void setup() {
         wishedProductRequest =
                 new WishedProductRequest(
+                        "18520837000",
                         "Secador de cabelo",
                         BigDecimal.valueOf(3),
                         2
                 );
 
         wishedProductResponse = new WishedProductResponse();
-//        BeanUtils.copyProperties(wishedProductRequest, wishedProductResponse);
 
         wishedProduct =
                 new WishedProduct(
                         id,
                         "e4b5209f-9d1f-47bc-acfb-f7eec3ffc033",
+                        "18520837000",
                         "Secador de cabelo",
                         BigDecimal.valueOf(3),
                         2,
                         inclusionDate
-        );
+                );
 
         savedWishedProduct = new WishedProduct();
         BeanUtils.copyProperties(wishedProduct, savedWishedProduct);
@@ -83,6 +82,7 @@ class WishedProductServiceImplTest {
         wishedProductResponse =
                 new WishedProductResponse(
                         "e4b5209f-9d1f-47bc-acfb-f7eec3ffc033",
+                        "18520837000",
                         "Secador de cabelo",
                         BigDecimal.valueOf(3),
                         2,
@@ -99,7 +99,9 @@ class WishedProductServiceImplTest {
     @Test
     @DisplayName("Must throw an error of wished product not found")
     public void shouldNotfindWishedProductByUuid() {
-        Mockito.when(wishedProductRepository.findByUuid("incorrect-uuid")).thenReturn(null);
+        Mockito.when(wishedProductRepository.findByClientCpfAndUuid(
+                "incorrect-cpf",
+                "incorrect-uuid")).thenReturn(null);
     }
 
     @Test
@@ -108,21 +110,10 @@ class WishedProductServiceImplTest {
         Mockito.when(wishedProductRepository.save(wishedProduct)).thenReturn(savedWishedProduct);
         Mockito.when(wishedProductRepository.save(savedWishedProduct)).thenReturn(wishedProduct);
 
-        WishedProductResponse response = wishedProductServiceImpl.create(wishedProductRequest);
+        WishedProductResponse response = wishedProductServiceImpl.addWishedProduct(wishedProductRequest);
 
         assertNotNull(response);
     }
-
-    @Test
-    @DisplayName("Must return wished product response")
-    public void shouldfindWishedProductByUuid() {
-        Mockito.when(wishedProductRepository.findByUuid("e4b5209f-9d1f-47bc-acfb-f7eec3ffc033")).thenReturn(wishedProduct);
-        WishedProductResponse wishedProductResponseFoundByUuid = wishedProductServiceImpl.getByUuid("e4b5209f-9d1f-47bc-acfb-f7eec3ffc033");
-
-        assertNotNull(wishedProductResponseFoundByUuid);
-//        assertEquals(wishedProductResponseFoundByUuid, wishedProductResponse);
-    }
-
 
     @Test
     @DisplayName("Must return the saved wished product")
@@ -131,7 +122,6 @@ class WishedProductServiceImplTest {
         List<WishedProductResponse> returnWishedProductResponses = wishedProductServiceImpl.getAll();
 //        assertEquals(returnWishedProductResponses, wishedProductResponseList);
     }
-
 
 
 }

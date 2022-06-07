@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface WishedProductService {
 
-    void delete(String uuid);
+    void deleteWishedProduct(String cpf, String uuid);
 
-    WishedProductResponse create(WishedProductRequest wishedProductRequest);
+    WishedProductResponse addWishedProduct(WishedProductRequest wishedProductRequest);
 
-    WishedProductResponse getByUuid(String uuid);
+    List<WishedProductResponse> getWishedProductListByCpf(String uuid);
 
     List<WishedProductResponse> getAll();
 }

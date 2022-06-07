@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class WishedProductResponse {
     private String uuid;
+    private String clientCpf;
     private String name;
     private BigDecimal price;
     private Integer quantity;
@@ -21,6 +22,7 @@ public class WishedProductResponse {
 
     public WishedProductResponse(WishedProduct wishedProduct) {
         this.uuid = wishedProduct.getUuid();
+        this.clientCpf = wishedProduct.getClientCpf();
         this.name = wishedProduct.getName();
         this.price = wishedProduct.getPrice();
         this.quantity = wishedProduct.getQuantity();

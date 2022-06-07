@@ -22,6 +22,7 @@ public class WishedProduct {
     @Id
     private ObjectId id;
     private String uuid = UUID.randomUUID().toString();
+    private String clientCpf;
     private String name;
     private BigDecimal price;
     private Integer quantity;
@@ -32,5 +33,6 @@ public class WishedProduct {
         this.name = wishedProductRequest.getName();
         this.price = wishedProductRequest.getPrice();
         this.quantity = wishedProductRequest.getQuantity();
+        this.clientCpf =wishedProductRequest.getClientCpf();
     }
 }

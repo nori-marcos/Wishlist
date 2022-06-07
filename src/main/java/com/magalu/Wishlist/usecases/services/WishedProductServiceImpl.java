@@ -14,11 +14,18 @@ import java.util.List;
 @Service
 public class WishedProductServiceImpl implements WishedProductService {
 
-    @Autowired
-    private WishedProductRepository wishedProductRepository;
+//    @Autowired
+//    private WishedProductRepository wishedProductRepository;
+
+//    Utilização de constructor injection facilita a criação de testes, não necessitando de inflexão.
+    private final WishedProductRepository wishedProductRepository;
+
+    public WishedProductServiceImpl(final WishedProductRepository wishedProductRepository){
+        this.wishedProductRepository = wishedProductRepository;
+    }
 
     @Override
-    public WishedProductResponse create(WishedProductRequest wishedProductRequest) {
+    public WishedProductResponse addWishedProduct(WishedProductRequest wishedProductRequest) {
 
         List<WishedProduct> wishedProductList = wishedProductRepository.findAll();
 
@@ -41,27 +48,34 @@ public class WishedProductServiceImpl implements WishedProductService {
     }
 
     @Override
-    public void delete(String uuid) {
-        WishedProduct wishedProduct = wishedProductRepository.findByUuid(uuid);
+    public void deleteWishedProduct(String cpf, String uuid) {
+        WishedProduct wishedProduct = wishedProductRepository.findByClientCpfAndUuid(cpf, uuid);
 
         if (wishedProduct == null) {
             throw new BusinessValidationException(
-                    "Can not delete the product: " + uuid + " because it does not exist in the wishlist.", HttpStatus.NOT_FOUND);
+                    "Can not delete the product "
+                            + uuid
+                            + " because it does not exist in the wishlist of the client "
+                            + cpf
+                            + ".", HttpStatus.NOT_FOUND);
         }
 
         wishedProductRepository.delete(wishedProduct);
     }
 
     @Override
-    public WishedProductResponse getByUuid(String uuid) {
+    public List<WishedProductResponse> getWishedProductListByCpf(String cpf) {
 
-        WishedProduct wishedProduct = wishedProductRepository.findByUuid(uuid);
+        List<WishedProduct> wishedProductList = wishedProductRepository.findByClientCpf(cpf);
 
-        if (wishedProduct == null) {
-            throw new BusinessValidationException("Can not find the product: " + uuid + " in the wishlist.", HttpStatus.NOT_FOUND);
+        if (wishedProductList.isEmpty()) {
+            throw new BusinessValidationException(
+                    "Can not find the wishlist of cpf "
+                    + cpf
+                    + ".", HttpStatus.NOT_FOUND);
         }
 
-        return new WishedProductResponse(wishedProduct);
+        return WishedProductResponse.toResponse(wishedProductList);
     }
 
     @Override
@@ -70,7 +84,7 @@ public class WishedProductServiceImpl implements WishedProductService {
         List<WishedProduct> wishedProductList = wishedProductRepository.findAll();
 
         if (wishedProductList.isEmpty()) {
-            throw new BusinessValidationException("The wishlist is empty.", HttpStatus.NOT_FOUND);
+            throw new BusinessValidationException("There are not wished products.", HttpStatus.NOT_FOUND);
         }
 
         return WishedProductResponse.toResponse(wishedProductList);

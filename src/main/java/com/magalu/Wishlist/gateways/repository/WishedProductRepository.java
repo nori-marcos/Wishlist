@@ -4,6 +4,9 @@ import com.magalu.Wishlist.domains.WishedProduct;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
+import java.util.List;
+
 public interface WishedProductRepository extends MongoRepository<WishedProduct, ObjectId> {
-    WishedProduct findByUuid(String uuid);
+    WishedProduct findByClientCpfAndUuid(String cpf, String uuid);
+    List<WishedProduct> findByClientCpf(String cpf);
 }

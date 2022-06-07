@@ -12,7 +12,7 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/wished-product")
+@RequestMapping("/wished-products")
 public class WishedProductController {
 
     @Autowired
@@ -21,19 +21,22 @@ public class WishedProductController {
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public WishedProductResponse addProductToWishlist(@RequestBody @Valid WishedProductRequest wishedProductRequest) {
-        return wishedProductService.create(wishedProductRequest);
+        return wishedProductService.addWishedProduct(wishedProductRequest);
     }
 
-    @DeleteMapping("/{uuid}")
-    public ResponseEntity<?> deleteProductFromWishlist(@PathVariable(required = true) String uuid) {
-        wishedProductService.delete(uuid);
+    @DeleteMapping("/{cpf}/{uuid}")
+    public ResponseEntity<?> deleteProductFromWishlist(
+            @PathVariable(required = true) String cpf,
+            @PathVariable(required = true) String uuid) {
+        wishedProductService.deleteWishedProduct(cpf, uuid);
         return ResponseEntity.ok("Successfully, deleted.");
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/{uuid}")
-    public WishedProductResponse getWishedProductByUuid(@PathVariable(required = false) String uuid) {
-        return wishedProductService.getByUuid(uuid);
+    @GetMapping("/{cpf}")
+    public List<WishedProductResponse> getWishedProductListByCpf(
+            @PathVariable(required = true)String cpf){
+        return wishedProductService.getWishedProductListByCpf(cpf);
     }
 
     @ResponseStatus(HttpStatus.OK)
