@@ -5,7 +5,6 @@ import com.magalu.Wishlist.exceptions.BusinessValidationException;
 import com.magalu.Wishlist.gateways.controllers.requests.WishedProductRequest;
 import com.magalu.Wishlist.gateways.controllers.responses.WishedProductResponse;
 import com.magalu.Wishlist.gateways.repository.WishedProductRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -17,23 +16,28 @@ public class WishedProductServiceImpl implements WishedProductService {
 //    @Autowired
 //    private WishedProductRepository wishedProductRepository;
 
-//    Utilização de constructor injection facilita a criação de testes, não necessitando de inflexão.
+    //    Utilização de constructor injection facilita a criação de testes, não necessitando de inflexão.
     private final WishedProductRepository wishedProductRepository;
 
-    public WishedProductServiceImpl(final WishedProductRepository wishedProductRepository){
+    public WishedProductServiceImpl(final WishedProductRepository wishedProductRepository) {
         this.wishedProductRepository = wishedProductRepository;
     }
 
     @Override
     public WishedProductResponse addWishedProduct(WishedProductRequest wishedProductRequest) {
 
-        List<WishedProduct> wishedProductList = wishedProductRepository.findAll();
+        List<WishedProduct> wishedProductList = wishedProductRepository.findByClientCpf(wishedProductRequest.getClientCpf());
 
-        Integer totalNumberOfAddedItems = wishedProductList.stream()
-                .mapToInt(wishedProduct -> wishedProduct.getQuantity()).sum();
+        Integer totalNumberOfAddedItems =
+                wishedProductList
+                        .stream()
+                        .mapToInt(wishedProduct -> wishedProduct.getQuantity()).sum();
 
         if (totalNumberOfAddedItems >= 20) {
-            throw new BusinessValidationException("Your wish list has reached the limit of 20 items.", HttpStatus.BAD_REQUEST);
+            throw new BusinessValidationException(
+                    "The wishlist of CPF "
+                            + wishedProductRequest.getClientCpf()
+                            + " has reached the limit of 20 items.", HttpStatus.BAD_REQUEST);
         }
 
         if (wishedProductRequest.getQuantity() > 20) {
@@ -71,8 +75,8 @@ public class WishedProductServiceImpl implements WishedProductService {
         if (wishedProductList.isEmpty()) {
             throw new BusinessValidationException(
                     "Can not find the wishlist of cpf "
-                    + cpf
-                    + ".", HttpStatus.NOT_FOUND);
+                            + cpf
+                            + ".", HttpStatus.NOT_FOUND);
         }
 
         return WishedProductResponse.toResponse(wishedProductList);
